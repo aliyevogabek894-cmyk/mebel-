@@ -1,0 +1,143 @@
+{% extends "production/base.html" %}
+{% block title %}Buyurtmalar – Wood Timbero{% endblock %}
+{% block page_title %}Barcha buyurtmalar{% endblock %}
+
+{% block content %}
+<!-- Filter bar -->
+<div class="wood-panel mb-4">
+    <div style="padding: 16px 20px;">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <div style="position: relative;">
+                    <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.8rem;"></i>
+                    <input type="text" name="q" class="form-control form-control-sm"
+                           style="background:#090d16; border-color:var(--border-color); color:#fff; padding-left:34px; border-radius:8px;"
+                           placeholder="Buyurtma №, mijoz, telefon..."
+                           value="{{ request.GET.q }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="stage" class="form-select form-select-sm" style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;">
+                    <option value="">Barcha bosqichlar</option>
+                    {% for stage in stages %}
+                    <option value="{{ stage.id }}" {% if request.GET.stage == stage.id|stringformat:"s" %}selected{% endif %}>
+                        {{ stage.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="priority" class="form-select form-select-sm" style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;">
+                    <option value="">Barcha ustuvorlik</option>
+                    <option value="URGENT" {% if request.GET.priority == "URGENT" %}selected{% endif %}>⚫ Shoshilinch</option>
+                    <option value="HIGH" {% if request.GET.priority == "HIGH" %}selected{% endif %}>🔴 Yuqori</option>
+                    <option value="MEDIUM" {% if request.GET.priority == "MEDIUM" %}selected{% endif %}>🟡 O'rtacha</option>
+                    <option value="NORMAL" {% if request.GET.priority == "NORMAL" %}selected{% endif %}>🟢 Oddiy</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select form-select-sm" style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;">
+                    <option value="">Barcha holat</option>
+                    <option value="active" {% if request.GET.status == "active" %}selected{% endif %}>Jarayondagilar</option>
+                    <option value="delayed" {% if request.GET.status == "delayed" %}selected{% endif %}>Kechikkanlar</option>
+                    <option value="completed" {% if request.GET.status == "completed" %}selected{% endif %}>Tayyorlar</option>
+                    <option value="problem" {% if request.GET.status == "problem" %}selected{% endif %}>Muammolar</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn-wood-primary btn-sm">
+                    <i class="bi bi-search"></i> Qidirish
+                </button>
+                <a href="{% url 'orders_list' %}" class="btn-wood-outline btn-sm">Tozalash</a>
+                <a href="{% url 'order_create' %}" class="btn-wood-success btn-sm ms-auto">
+                    <i class="bi bi-plus-lg"></i> Yangi
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="wood-panel">
+    <div class="wood-panel-header">
+        <h3 class="wood-panel-title">
+            <i class="bi bi-list-task text-primary"></i>
+            Buyurtmalar ro'yxati (Jami: {{ orders.count }} ta)
+        </h3>
+        <a href="{% url 'order_create' %}" class="btn-wood-success btn-sm">
+            <i class="bi bi-plus-lg"></i> Yangi buyurtma
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table-wood">
+            <thead>
+                <tr>
+                    <th style="width: 90px;">№</th>
+                    <th>Mijoz</th>
+                    <th>Mahsulot</th>
+                    <th>Bosqich</th>
+                    <th>Ustuvorlik</th>
+                    <th>Muddat</th>
+                    <th class="text-center">Holat</th>
+                    <th style="width: 100px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr onclick="window.location.href='{% url 'order_detail' order.id %}'">
+                    <td>
+                        <strong style="color: #38bdf8; font-family: monospace;">M-{{ order.order_number }}</strong>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: #ffffff;">{{ order.client_name }}</div>
+                        <small style="color: var(--text-muted); font-size: 0.75rem;">{{ order.client_phone|default:"—" }}</small>
+                    </td>
+                    <td>
+                        <div style="color: #ffffff;">{{ order.product_name }}</div>
+                        <small style="color: var(--text-muted); font-size: 0.75rem;">{{ order.dimensions|default:"Standart" }}</small>
+                    </td>
+                    <td>
+                        {% if order.is_completed %}
+                            <span class="badge-pill-green" style="font-size: 0.72rem; padding: 3px 10px;">✓ Tayyor</span>
+                        {% else %}
+                            <span class="badge-pill-blue" style="font-size: 0.72rem; padding: 3px 10px;">{{ order.current_stage.name|default:"—" }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary" style="font-size: 0.72rem;">{{ order.get_priority_display }}</span>
+                    </td>
+                    <td style="font-family: monospace; font-size: 0.82rem;">
+                        <span class="{% if order.is_delayed %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                            {{ order.deadline|date:"d.m.Y" }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        {% if order.is_completed %}
+                            <span class="badge-pill-green">Tayyor</span>
+                        {% elif order.has_problem %}
+                            <span class="badge-pill-coral">Muammo</span>
+                        {% elif order.is_delayed %}
+                            <span class="badge-pill-coral">Kechikkan</span>
+                        {% else %}
+                            <span class="badge-pill-amber">Jarayonda</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'order_detail' order.id %}" class="btn-wood-outline btn-sm py-1 px-2" style="font-size: 0.76rem;" onclick="event.stopPropagation();">
+                            Ko'rish <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5" style="color: var(--text-muted);">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        Buyurtmalar topilmadi
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

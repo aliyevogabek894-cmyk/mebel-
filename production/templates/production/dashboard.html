@@ -1,0 +1,158 @@
+{% extends "production/base.html" %}
+{% block title %}Wood Timbero – Operator Boshqaruv Paneli{% endblock %}
+{% block page_title %}Ishlab chiqarish jarayoni{% endblock %}
+
+{% block content %}
+<!-- 4 KPI Stat Cards matching screenshot 1 -->
+<div class="kpi-grid">
+    <!-- Jami buyurtmalar (Blue) -->
+    <div class="kpi-card kpi-blue">
+        <div class="kpi-card-label">Jami buyurtmalar</div>
+        <div class="kpi-card-value">{{ stats.total }}</div>
+    </div>
+
+    <!-- Tayyor (Green) -->
+    <div class="kpi-card kpi-green">
+        <div class="kpi-card-label">Tayyor</div>
+        <div class="kpi-card-value">{{ stats.completed }}</div>
+    </div>
+
+    <!-- Jarayonda (Amber/Orange) -->
+    <div class="kpi-card kpi-amber">
+        <div class="kpi-card-label">Jarayonda</div>
+        <div class="kpi-card-value">{{ stats.in_progress }}</div>
+    </div>
+
+    <!-- Kutilmoqda (Coral/Red) -->
+    <div class="kpi-card kpi-coral">
+        <div class="kpi-card-label">Kutilmoqda</div>
+        <div class="kpi-card-value">{{ stats.waiting }}</div>
+    </div>
+</div>
+
+<!-- Buyurtmalar Holati Jadvali (Image 1 Operator Screen) -->
+<div class="wood-panel">
+    <div class="wood-panel-header">
+        <h2 class="wood-panel-title">
+            <i class="bi bi-card-checklist text-primary"></i>
+            Buyurtmalar holati
+        </h2>
+
+        <div class="d-flex align-items-center gap-3">
+            <!-- Search bar matching mockup -->
+            <form method="get" action="{% url 'dashboard' %}" class="search-box-wrap" id="searchForm">
+                <i class="bi bi-search search-box-icon"></i>
+                <input type="text"
+                       name="q"
+                       class="search-box-input"
+                       placeholder="Buyurtma raqami yoki mijoz nomi"
+                       value="{{ search_query }}"
+                       id="clientSearchInput">
+            </form>
+
+            <a href="{% url 'order_create' %}" class="btn-wood-success btn-sm">
+                <i class="bi bi-plus-lg"></i>
+                <span>Yangi buyurtma</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-wood" id="ordersTable">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">№</th>
+                    <th>Mijoz</th>
+                    <th>Buyurtma</th>
+                    <th class="text-center" style="width: 110px;">Kesish</th>
+                    <th class="text-center" style="width: 110px;">Kromka</th>
+                    <th class="text-center" style="width: 110px;">Prisatka</th>
+                    <th class="text-center" style="width: 140px;">Holat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table_rows %}
+                <tr onclick="window.location.href='{% url 'order_detail' row.order.id %}'" title="Buyurtma tafsilotini ko'rish uchun bosing">
+                    <td style="color: var(--text-muted); font-weight: 600; font-family: monospace; font-size: 0.88rem;">
+                        {{ row.num_str }}
+                    </td>
+                    <td style="font-weight: 600; color: #ffffff;">
+                        {{ row.order.client_name }}
+                    </td>
+                    <td>
+                        <span style="font-weight: 700; color: #38bdf8; letter-spacing: 0.02em;">{{ row.code_str }}</span>
+                    </td>
+
+                    <!-- Kesish Bosqichi -->
+                    <td class="text-center">
+                        {% if row.kesish_done %}
+                            <span class="check-done"><i class="bi bi-check-lg"></i></span>
+                        {% elif row.kesish_active %}
+                            <span class="check-active">Jarayonda</span>
+                        {% else %}
+                            <span class="check-dash">—</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Kromka Bosqichi -->
+                    <td class="text-center">
+                        {% if row.kromka_done %}
+                            <span class="check-done"><i class="bi bi-check-lg"></i></span>
+                        {% elif row.kromka_active %}
+                            <span class="check-active">Jarayonda</span>
+                        {% else %}
+                            <span class="check-dash">—</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Prisatka Bosqichi -->
+                    <td class="text-center">
+                        {% if row.prisatka_done %}
+                            <span class="check-done"><i class="bi bi-check-lg"></i></span>
+                        {% elif row.prisatka_active %}
+                            <span class="check-active">Jarayonda</span>
+                        {% else %}
+                            <span class="check-dash">—</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Holat Pill Badge -->
+                    <td class="text-center">
+                        <span class="{{ row.badge_class }}">
+                            {{ row.badge_text }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5" style="color: var(--text-muted);">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        Qidiruv bo'yicha buyurtmalar topilmadi
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Realtime filter script -->
+<script>
+    const searchInput = document.getElementById('clientSearchInput');
+    const tableRows = document.querySelectorAll('#ordersTable tbody tr');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            tableRows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

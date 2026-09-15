@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Wood Timbero – Mebel Ishlab Chiqarish Boshqaruvi{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 240px;
+            --bg-body: #090d16;
+            --bg-sidebar: #060911;
+            --bg-card: #101626;
+            --bg-card-hover: #151d32;
+            --bg-topbar: #0a0f1c;
+            --border-color: #1e293b;
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            
+            --text-main: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            /* KPI Card Colors matching screenshots */
+            --kpi-blue: #2563eb;
+            --kpi-green: #10b981;
+            --kpi-amber: #f59e0b;
+            --kpi-coral: #ef4444;
+            --kpi-purple: #8b5cf6;
+            
+            --accent-cyan: #06b6d4;
+            --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            font-size: 0.88rem;
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── SIDEBAR ── */
+        .wood-sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--bg-sidebar);
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1000;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+        }
+
+        .brand-header {
+            padding: 24px 20px 18px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .brand-logo-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; color: #fff; font-weight: 800;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            flex-shrink: 0;
+        }
+        .brand-titles {
+            line-height: 1.2;
+        }
+        .brand-name {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .brand-subtitle {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 16px 10px;
+            overflow-y: auto;
+        }
+
+        .menu-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            padding: 10px 12px 6px;
+        }
+
+        .nav-item-link {
+            color: var(--text-secondary);
+            padding: 10px 14px;
+            border-radius: 9px;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 0.86rem;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .nav-item-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            transition: color 0.15s;
+        }
+        .nav-item-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-item-link:hover i {
+            color: var(--accent-cyan);
+        }
+        .nav-item-link.active {
+            color: #ffffff;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.22) 0%, rgba(37, 99, 235, 0.08) 100%);
+            border-left: 3px solid #3b82f6;
+            font-weight: 600;
+        }
+        .nav-item-link.active i {
+            color: #60a5fa;
+        }
+
+        .sidebar-user-bottom {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.15);
+        }
+        .user-profile-widget {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .user-avatar-circle {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 700; color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .user-meta-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        .user-meta-role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ── MAIN LAYOUT ── */
+        .app-main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        /* ── TOPBAR ── */
+        .app-topbar {
+            background: var(--bg-topbar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            backdrop-filter: blur(8px);
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .btn-toggle-sidebar {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 6px 10px;
+            display: none;
+            cursor: pointer;
+        }
+        .topbar-page-heading {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .topbar-clock {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        .topbar-clock i { color: #38bdf8; }
+
+        .app-container {
+            padding: 24px 28px;
+            flex: 1;
+        }
+
+        /* ── KPI STAT CARDS (Image 1 top cards) ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 104px;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        }
+        .kpi-card-label {
+            font-size: 0.82rem;
+            font-weight: 500;
+            opacity: 0.95;
+            letter-spacing: 0.01em;
+        }
+        .kpi-card-value {
+            font-size: 2.3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-top: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-blue {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+        .kpi-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .kpi-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        .kpi-coral {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .kpi-purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        /* ── CUSTOM MODERN TABLES ── */
+        .wood-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            margin-bottom: 24px;
+        }
+        .wood-panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .wood-panel-title {
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-box-wrap {
+            position: relative;
+            min-width: 260px;
+        }
+        .search-box-input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 20px;
+            padding: 7px 16px 7px 36px;
+            font-size: 0.8rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .search-box-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255,255,255,0.07);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .search-box-input::placeholder {
+            color: var(--text-muted);
+        }
+        .search-box-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .table-wood {
+            width: 100%;
+            margin: 0;
+            color: var(--text-main);
+            border-collapse: collapse;
+        }
+        .table-wood th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            font-size: 0.74rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        .table-wood td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+            font-size: 0.85rem;
+        }
+        .table-wood tbody tr {
+            transition: background 0.15s ease;
+            cursor: pointer;
+        }
+        .table-wood tbody tr:hover {
+            background: var(--bg-card-hover);
+        }
+        .table-wood tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ── STATUS PILL BADGES (Matching Image 1) ── */
+        .badge-pill-green {
+            background: #10b981;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-pill-blue {
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-pill-amber {
+            background: #f59e0b;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-pill-coral {
+            background: #ef4444;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-pill-purple {
+            background: #8b5cf6;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Checkmark / Dash indicators in table */
+        .check-done {
+            color: #10b981;
+            font-weight: 800;
+            font-size: 1.05rem;
+        }
+        .check-active {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: rgba(59, 130, 246, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .check-dash {
+            color: #475569;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-wood-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.84rem;
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-wood-primary:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-wood-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.84rem;
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-wood-success:hover {
+            background: linear-gradient(135deg, #34d399, #10b981);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-wood-outline {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.84rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-wood-outline:hover {
+            background: rgba(255,255,255,0.08);
+            color: #ffffff;
+            border-color: #475569;
+        }
+
+        /* ── MODALS ── */
+        .modal-content {
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--text-main);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 18px 24px;
+        }
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 16px 24px;
+        }
+        .btn-close { filter: invert(1); opacity: 0.6; }
+
+        /* ── RESPONSIVE MOBILE NAVIGATION ── */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: #090d16;
+            border-top: 1px solid var(--border-color);
+            z-index: 1050;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .mobile-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 500;
+            gap: 3px;
+        }
+        .mobile-nav-link i { font-size: 1.15rem; }
+        .mobile-nav-link.active {
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        @media (max-width: 992px) {
+            .wood-sidebar {
+                transform: translateX(-100%);
+            }
+            .wood-sidebar.open {
+                transform: translateX(0);
+            }
+            .app-main {
+                margin-left: 0;
+                padding-bottom: 65px;
+            }
+            .btn-toggle-sidebar {
+                display: block;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .mobile-bottom-nav {
+                display: flex;
+            }
+            .app-container {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .kpi-card {
+                padding: 14px;
+                min-height: 85px;
+            }
+            .kpi-card-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<div class="d-flex">
+    <!-- Sidebar Navigation -->
+    <aside class="wood-sidebar" id="appSidebar">
+        <a href="{% url 'dashboard' %}" class="brand-header">
+            <div class="brand-logo-icon">
+                <i class="bi bi-boxes"></i>
+            </div>
+            <div class="brand-titles">
+                <div class="brand-name">Wood Timbero</div>
+                <span class="brand-subtitle">Sizning hamkoringiz</span>
+            </div>
+        </a>
+
+        <div class="sidebar-menu">
+            {% with request.resolver_match.url_name as url_name %}
+            {% if employee.role == 'WORKER' %}
+                <div class="menu-title">Ishchi Menyu</div>
+                <a class="nav-item-link {% if url_name == 'worker_panel' %}active{% endif %}" href="{% url 'worker_panel' %}">
+                    <i class="bi bi-hammer"></i>
+                    <span>Mening vazifalarim</span>
+                </a>
+                <a class="nav-item-link {% if url_name == 'worker_completed' %}active{% endif %}" href="{% url 'worker_completed' %}">
+                    <i class="bi bi-check2-all"></i>
+                    <span>Bajarilganlar</span>
+                </a>
+            {% else %}
+                <div class="menu-title">Asosiy menyu</div>
+                <a class="nav-item-link {% if url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <i class="bi bi-house-door"></i>
+                    <span>Bosh sahifa</span>
+                </a>
+                <a class="nav-item-link {% if url_name == 'orders_list' or url_name == 'order_detail' or url_name == 'order_create' %}active{% endif %}" href="{% url 'orders_list' %}">
+                    <i class="bi bi-clipboard2-check"></i>
+                    <span>Buyurtmalar</span>
+                </a>
+                <a class="nav-item-link {% if url_name == 'kanban' %}active{% endif %}" href="{% url 'kanban' %}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Ish jarayoni</span>
+                </a>
+                <a class="nav-item-link {% if url_name == 'workers_list' %}active{% endif %}" href="{% url 'workers_list' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Xodimlar</span>
+                </a>
+                <a class="nav-item-link {% if url_name == 'reports' %}active{% endif %}" href="{% url 'reports' %}">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Hisobotlar</span>
+                </a>
+
+                <div class="menu-title">Tizim va sozlamalar</div>
+                <a class="nav-item-link {% if url_name == 'architecture' %}active{% endif %}" href="{% url 'architecture' %}">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>Tizim arxitekturasi</span>
+                </a>
+                <a class="nav-item-link {% if url_name == 'problems' %}active{% endif %}" href="{% url 'problems' %}">
+                    <i class="bi bi-shield-exclamation"></i>
+                    <span>Muammolar</span>
+                </a>
+                <a class="nav-item-link" href="{% url 'worker_panel' %}" target="_blank">
+                    <i class="bi bi-phone"></i>
+                    <span>Xodim (mobil ko'rish)</span>
+                </a>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Sidebar User Footer -->
+        <div class="sidebar-user-bottom">
+            <div class="user-profile-widget">
+                <div class="user-avatar-circle">
+                    {{ user.username|first|upper }}
+                </div>
+                <div style="flex:1; overflow:hidden;">
+                    <div class="user-meta-name">{{ employee.full_name|default:user.username }}</div>
+                    <div class="user-meta-role">{% if employee %}{{ employee.get_role_display }}{% else %}Operator Admin{% endif %}</div>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-wood-outline w-100 justify-content-center" style="padding:5px; font-size:0.75rem;">
+                    <i class="bi bi-box-arrow-right"></i> Chiqish
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main flex-grow-1">
+        <!-- Sticky Topbar -->
+        <header class="app-topbar">
+            <div class="topbar-left">
+                <button class="btn-toggle-sidebar" id="sidebarToggle" type="button">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <h1 class="topbar-page-heading">
+                    {% block page_title %}Ishlab chiqarish jarayoni{% endblock %}
+                </h1>
+            </div>
+
+            <div class="topbar-right">
+                <div class="topbar-clock" id="liveClock">
+                    <i class="bi bi-clock"></i>
+                    <span id="clockDisplay">{{ current_time_str }}</span>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn-wood-outline btn-sm" title="Yangilash">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="app-container">
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="alert alert-{{ msg.tags }} alert-dismissible fade show mb-4" role="alert" style="background:rgba(37,99,235,0.15); border:1px solid rgba(37,99,235,0.3); color:#93c5fd; border-radius:10px;">
+                        <i class="bi bi-info-circle me-2"></i> {{ msg }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav">
+    {% with request.resolver_match.url_name as url_name %}
+    <a href="{% url 'dashboard' %}" class="mobile-nav-link {% if url_name == 'dashboard' %}active{% endif %}">
+        <i class="bi bi-house-door"></i>
+        <span>Bosh sahifa</span>
+    </a>
+    <a href="{% url 'orders_list' %}" class="mobile-nav-link {% if url_name == 'orders_list' %}active{% endif %}">
+        <i class="bi bi-clipboard2-check"></i>
+        <span>Buyurtmalar</span>
+    </a>
+    <a href="{% url 'worker_panel' %}" class="mobile-nav-link {% if url_name == 'worker_panel' %}active{% endif %}">
+        <i class="bi bi-hammer"></i>
+        <span>Vazifalar</span>
+    </a>
+    <a href="{% url 'reports' %}" class="mobile-nav-link {% if url_name == 'reports' %}active{% endif %}">
+        <i class="bi bi-bar-chart-line"></i>
+        <span>Hisobotlar</span>
+    </a>
+    {% endwith %}
+</nav>
+
+{% else %}
+    {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Live Clock updater
+    function updateClock() {
+        const now = new Date();
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const y = now.getFullYear();
+        const h = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const clockElem = document.getElementById('clockDisplay');
+        if (clockElem) {
+            clockElem.textContent = `${d}.${m}.${y} ${h}:${min}`;
+        }
+    }
+    setInterval(updateClock, 10000);
+
+    // Sidebar Mobile Toggle
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('appSidebar');
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

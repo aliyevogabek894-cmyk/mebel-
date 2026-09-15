@@ -1,0 +1,253 @@
+{% extends "production/base.html" %}
+{% block title %}Buyurtma Bajarish – {{ code_str }}{% endblock %}
+{% block page_title %}Buyurtma bajarish{% endblock %}
+
+{% block extra_css %}
+<style>
+    .task-exec-container {
+        max-width: 520px;
+        margin: 0 auto;
+    }
+
+    .task-exec-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Order details banner */
+    .order-info-banner {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+    }
+
+    /* Selection status buttons matching Image 1 */
+    .status-choice-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .status-choice-btn {
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+        width: 100%;
+    }
+
+    /* Bajarildi (Green) */
+    .btn-status-completed {
+        background: #10b981;
+        color: #ffffff;
+    }
+    .btn-status-completed:hover, .status-radio:checked + .btn-status-completed {
+        background: #059669;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Muammo (Warning / Outline) */
+    .btn-status-problem {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.35);
+        color: #ef4444;
+    }
+    .btn-status-problem:hover, .status-radio:checked + .btn-status-problem {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+    }
+
+    /* Qayta ishlash (Refresh / Outline) */
+    .btn-status-rework {
+        background: rgba(245, 158, 11, 0.08);
+        border-color: rgba(245, 158, 11, 0.35);
+        color: #f59e0b;
+    }
+    .btn-status-rework:hover, .status-radio:checked + .btn-status-rework {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: #f59e0b;
+    }
+
+    /* Radio button hidden trick */
+    .status-radio {
+        display: none;
+    }
+    .status-radio:checked + label {
+        transform: scale(1.02);
+        border-width: 2px;
+    }
+
+    /* Big blue Saqlash button */
+    .btn-save-task {
+        background: linear-gradient(135deg, #0284c7, #2563eb);
+        border: none;
+        color: #ffffff;
+        font-size: 1.05rem;
+        font-weight: 700;
+        padding: 14px;
+        border-radius: 12px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+    }
+    .btn-save-task:hover {
+        background: linear-gradient(135deg, #0369a1, #1d4ed8);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.45);
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="task-exec-container">
+    <!-- Back to tasks -->
+    <div class="mb-3">
+        <a href="{% url 'worker_panel' %}" class="btn-wood-outline btn-sm">
+            <i class="bi bi-arrow-left"></i>
+            <span>Orqaga (Vazifalar)</span>
+        </a>
+    </div>
+
+    <!-- Main Card matching Image 1: Xodim (ish jarayoni) -->
+    <div class="task-exec-card">
+        <!-- Order info banner -->
+        <div class="order-info-banner">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0;">
+                        {{ code_str }}
+                    </h2>
+                    <div style="font-size: 1rem; color: var(--text-secondary); margin-top: 2px;">
+                        {{ order.client_name }}
+                    </div>
+                </div>
+                <div class="text-end">
+                    <span style="font-size: 0.76rem; color: var(--text-muted); font-family: monospace;">
+                        {{ order.created_at|date:"d.m.Y H:i" }}
+                    </span>
+                    <div style="font-size: 0.8rem; color: #38bdf8; font-weight: 600;">
+                        {{ order.product_name }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sizning bosqichingiz -->
+            <div class="mt-3 pt-3" style="border-top: 1px solid var(--border-color);">
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">Sizning bosqichingiz:</div>
+                <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.3);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-gear-wide-connected text-primary fs-5"></i>
+                        <strong style="color: #60a5fa; font-size: 0.95rem;">{{ stage.name }}</strong>
+                    </div>
+                    <i class="bi bi-chevron-right text-primary"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Action Form -->
+        <form method="post" action="{% url 'worker_task' order.id %}">
+            {% csrf_token %}
+
+            <div style="font-size: 0.9rem; font-weight: 700; color: #ffffff; margin-bottom: 12px;">
+                Holatni belgilash
+            </div>
+
+            <!-- Status Choice Buttons -->
+            <div class="status-choice-grid">
+                <!-- Option 1: Bajarildi -->
+                <div>
+                    <input type="radio" name="action_type" value="complete" id="actionComplete" class="status-radio" checked>
+                    <label for="actionComplete" class="status-choice-btn btn-status-completed">
+                        <i class="bi bi-check-lg fs-5"></i>
+                        <span>✓ Bajarildi</span>
+                    </label>
+                </div>
+
+                <!-- Option 2: Muammo -->
+                <div>
+                    <input type="radio" name="action_type" value="problem" id="actionProblem" class="status-radio">
+                    <label for="actionProblem" class="status-choice-btn btn-status-problem">
+                        <i class="bi bi-exclamation-triangle fs-5"></i>
+                        <span>⚠ Muammo</span>
+                    </label>
+                </div>
+
+                <!-- Option 3: Qayta ishlash -->
+                <div>
+                    <input type="radio" name="action_type" value="rework" id="actionRework" class="status-radio">
+                    <label for="actionRework" class="status-choice-btn btn-status-rework">
+                        <i class="bi bi-arrow-repeat fs-5"></i>
+                        <span>🔄 Qayta ishlash</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Reason select if problem -->
+            <div id="problemReasonDiv" class="mb-3" style="display: none;">
+                <label class="form-label" style="font-size: 0.8rem; color: #ef4444;">Muammo sababi</label>
+                <select name="reason" class="form-select form-select-sm" style="background:#090d16; border-color:#ef4444; color:#fff;">
+                    <option value="Material yo'q">Material yo'q</option>
+                    <option value="Stanok buzildi">Stanok buzildi</option>
+                    <option value="Chizma noto'g'ri">Chizma noto'g'ri</option>
+                    <option value="Detal yetishmayapti">Detal yetishmayapti</option>
+                    <option value="Boshqa muammo">Boshqa muammo</option>
+                </select>
+            </div>
+
+            <!-- Izoh (ixtiyoriy) -->
+            <div class="mb-4">
+                <label class="form-label" style="font-size: 0.82rem; color: var(--text-muted);">
+                    Izoh (ixtiyoriy)
+                </label>
+                <textarea name="note"
+                          class="form-control"
+                          rows="3"
+                          style="background: #090d16; border-color: var(--border-color); color: #ffffff; border-radius: 10px; font-size: 0.86rem;"
+                          placeholder="Masalan: kesish tugadi, 6 ta detal..."></textarea>
+            </div>
+
+            <!-- Saqlash Button -->
+            <button type="submit" class="btn-save-task">
+                <i class="bi bi-floppy"></i>
+                <span>Saqlash</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const radioProblem = document.getElementById('actionProblem');
+    const radioComplete = document.getElementById('actionComplete');
+    const radioRework = document.getElementById('actionRework');
+    const problemDiv = document.getElementById('problemReasonDiv');
+
+    function updateProblemState() {
+        if (radioProblem && radioProblem.checked) {
+            problemDiv.style.display = 'block';
+        } else {
+            problemDiv.style.display = 'none';
+        }
+    }
+
+    if (radioProblem) radioProblem.addEventListener('change', updateProblemState);
+    if (radioComplete) radioComplete.addEventListener('change', updateProblemState);
+    if (radioRework) radioRework.addEventListener('change', updateProblemState);
+</script>
+{% endblock %}

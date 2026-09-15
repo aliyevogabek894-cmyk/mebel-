@@ -1,0 +1,305 @@
+{% extends "production/base.html" %}
+{% block title %}Hisobotlar va Statistika – Wood Timbero{% endblock %}
+{% block page_title %}Hisobotlar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reports-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .filter-bar {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .date-filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border-color);
+        padding: 6px 14px;
+        border-radius: 8px;
+    }
+    .date-filter-input {
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-size: 0.86rem;
+        outline: none;
+        width: 100px;
+        text-align: center;
+    }
+
+    /* 3 KPI cards matching screenshot 1 right screen */
+    .reports-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    /* Progress bars for station efficiency */
+    .station-rate-item {
+        margin-bottom: 18px;
+    }
+    .station-rate-item:last-child {
+        margin-bottom: 0;
+    }
+    .station-rate-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.86rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    .station-rate-bar-bg {
+        height: 10px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .station-rate-bar-fill {
+        height: 100%;
+        border-radius: 20px;
+        transition: width 1s ease;
+    }
+
+    /* Chart styles */
+    .chart-container {
+        background: #020617;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Bar columns in workshop breakdown */
+    .bar-chart-flex {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        height: 140px;
+        padding-top: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .bar-col-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 60px;
+    }
+    .bar-col-pillar {
+        width: 24px;
+        border-radius: 6px 6px 0 0;
+        transition: height 0.8s ease;
+    }
+    .bar-col-name {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+    .bar-col-val {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reports-container">
+    <!-- Top Filter Bar -->
+    <div class="filter-bar">
+        <form method="get" class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="date-filter-group">
+                <input type="text" name="start_date" class="date-filter-input" value="{{ start_date }}">
+                <span style="color: var(--text-muted);">-</span>
+                <input type="text" name="end_date" class="date-filter-input" value="{{ end_date }}">
+                <i class="bi bi-calendar3" style="color: var(--text-secondary);"></i>
+            </div>
+            <button type="submit" class="btn-wood-primary btn-sm">
+                <span>Qidirish</span>
+            </button>
+        </form>
+
+        <div class="d-flex gap-2">
+            <button type="button" class="btn-wood-outline btn-sm active" onclick="alert('Oxirgi 30 kun ma\'lumotlari')">Oxirgi 30 kun</button>
+            <button type="button" class="btn-wood-outline btn-sm" onclick="window.print()">
+                <i class="bi bi-printer"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3 Stat KPI Cards matching Image 1: Hisobotlar -->
+    <div class="reports-kpi-grid">
+        <!-- Jami buyurtmalar (Blue) -->
+        <div class="kpi-card kpi-blue">
+            <div class="kpi-card-label">Jami buyurtmalar</div>
+            <div class="kpi-card-value">{{ stats.total }}</div>
+        </div>
+
+        <!-- Tayyor (Green) -->
+        <div class="kpi-card kpi-green">
+            <div class="kpi-card-label">Tayyor</div>
+            <div class="kpi-card-value">{{ stats.completed }}</div>
+        </div>
+
+        <!-- O'rtacha vaqt (Purple) -->
+        <div class="kpi-card kpi-purple">
+            <div class="kpi-card-label">O'rtacha vaqt</div>
+            <div class="kpi-card-value">{{ stats.avg_hours }}</div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Stansiyalar bo'yicha samaradorlik -->
+        <div class="col-lg-6">
+            <div class="wood-panel h-100 mb-0">
+                <div class="wood-panel-header">
+                    <h3 class="wood-panel-title">
+                        <i class="bi bi-speedometer2 text-success"></i>
+                        Stansiyalar bo'yicha samaradorlik
+                    </h3>
+                </div>
+                <div style="padding: 24px;">
+                    {% for st in station_efficiency %}
+                    <div class="station-rate-item">
+                        <div class="station-rate-labels">
+                            <span style="color: #ffffff;">{{ st.name }}</span>
+                            <span style="color: {{ st.color }};">{{ st.rate }}%</span>
+                        </div>
+                        <div class="station-rate-bar-bg">
+                            <div class="station-rate-bar-fill" style="width: {{ st.rate }}%; background: {{ st.color }};"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); font-size: 0.78rem; color: var(--text-muted);">
+                        <i class="bi bi-info-circle me-1 text-info"></i>
+                        Samaradorlik belgilangan standart vaqt va haqiqiy bajarilish muddati nisbatida hisoblanadi.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ustaxonalarga ko'ra bajarilish (Bar Chart) -->
+        <div class="col-lg-6">
+            <div class="wood-panel h-100 mb-0">
+                <div class="wood-panel-header">
+                    <h3 class="wood-panel-title">
+                        <i class="bi bi-pie-chart text-info"></i>
+                        Ustaxonalarga ko'ra bajarilish
+                    </h3>
+                </div>
+                <div style="padding: 24px;">
+                    <div class="bar-chart-flex">
+                        {% for col in workshop_breakdown %}
+                        <div class="bar-col-item">
+                            <div class="bar-col-val">{{ col.count }}</div>
+                            <div class="bar-col-pillar" style="height: {{ col.height }}px; background: {{ col.color }};"></div>
+                            <div class="bar-col-name">{{ col.name }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-between text-muted mt-3" style="font-size: 0.75rem;">
+                        <span>* Jami jarayondagi detallar soni</span>
+                        <span class="text-success">Hammasi faol holatda</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kunlik statistika (Line Chart) matching Image 1 -->
+    <div class="wood-panel">
+        <div class="wood-panel-header">
+            <h3 class="wood-panel-title">
+                <i class="bi bi-graph-up-arrow text-primary"></i>
+                Kunlik statistika
+            </h3>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">06.09 - 12.09 davridagi dinamika</span>
+        </div>
+        <div style="padding: 24px;">
+            <div class="chart-container">
+                <!-- Interactive SVG Line Chart -->
+                <svg viewBox="0 0 700 220" style="width: 100%; height: 220px; overflow: visible;">
+                    <!-- Horizontal grid lines & Y-axis labels -->
+                    <line x1="40" y1="20" x2="680" y2="20" stroke="#1e293b" stroke-dasharray="3"/>
+                    <text x="25" y="24" fill="#64748b" font-size="11" text-anchor="end">25</text>
+
+                    <line x1="40" y1="65" x2="680" y2="65" stroke="#1e293b" stroke-dasharray="3"/>
+                    <text x="25" y="69" fill="#64748b" font-size="11" text-anchor="end">20</text>
+
+                    <line x1="40" y1="110" x2="680" y2="110" stroke="#1e293b" stroke-dasharray="3"/>
+                    <text x="25" y="114" fill="#64748b" font-size="11" text-anchor="end">15</text>
+
+                    <line x1="40" y1="155" x2="680" y2="155" stroke="#1e293b" stroke-dasharray="3"/>
+                    <text x="25" y="159" fill="#64748b" font-size="11" text-anchor="end">10</text>
+
+                    <line x1="40" y1="195" x2="680" y2="195" stroke="#334155"/>
+                    <text x="25" y="199" fill="#64748b" font-size="11" text-anchor="end">5</text>
+
+                    <!-- Gradient Area under curve -->
+                    <defs>
+                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+                            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Coordinates:
+                        06.09 (x=70, count=5 -> y=195)
+                        07.09 (x=170, count=8 -> y=168)
+                        08.09 (x=270, count=12 -> y=132)
+                        09.09 (x=370, count=15 -> y=110)
+                        10.09 (x=470, count=13 -> y=125)
+                        11.09 (x=570, count=18 -> y=80)
+                        12.09 (x=670, count=22 -> y=48)
+                    -->
+                    <polygon points="70,195 170,168 270,132 370,110 470,125 570,80 670,48 670,195 70,195" fill="url(#areaGrad)"/>
+
+                    <!-- Smooth Path -->
+                    <path d="M 70,195 L 170,168 L 270,132 L 370,110 L 470,125 L 570,80 L 670,48"
+                          fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+
+                    <!-- Data dots and X labels -->
+                    <g>
+                        <circle cx="70" cy="195" r="5" fill="#38bdf8" stroke="#090d16" stroke-width="2"/>
+                        <text x="70" y="215" fill="#94a3b8" font-size="11" text-anchor="middle">6.09</text>
+
+                        <circle cx="170" cy="168" r="5" fill="#38bdf8" stroke="#090d16" stroke-width="2"/>
+                        <text x="170" y="215" fill="#94a3b8" font-size="11" text-anchor="middle">7.09</text>
+
+                        <circle cx="270" cy="132" r="5" fill="#38bdf8" stroke="#090d16" stroke-width="2"/>
+                        <text x="270" y="215" fill="#94a3b8" font-size="11" text-anchor="middle">8.09</text>
+
+                        <circle cx="370" cy="110" r="5" fill="#38bdf8" stroke="#090d16" stroke-width="2"/>
+                        <text x="370" y="215" fill="#94a3b8" font-size="11" text-anchor="middle">9.09</text>
+
+                        <circle cx="470" cy="125" r="5" fill="#38bdf8" stroke="#090d16" stroke-width="2"/>
+                        <text x="470" y="215" fill="#94a3b8" font-size="11" text-anchor="middle">10.09</text>
+
+                        <circle cx="570" cy="80" r="5" fill="#38bdf8" stroke="#090d16" stroke-width="2"/>
+                        <text x="570" y="215" fill="#94a3b8" font-size="11" text-anchor="middle">11.09</text>
+
+                        <circle cx="670" cy="48" r="6" fill="#10b981" stroke="#090d16" stroke-width="2"/>
+                        <text x="670" y="215" fill="#10b981" font-weight="700" font-size="11" text-anchor="middle">12.09</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "production/base.html" %}
+{% block title %}Bajarilgan Ishlar – Wood Timbero{% endblock %}
+{% block page_title %}Bajarilgan ishlar tarixi{% endblock %}
+
+{% block content %}
+<div class="wood-panel">
+    <div class="wood-panel-header">
+        <h3 class="wood-panel-title">
+            <i class="bi bi-check2-all text-success"></i>
+            Bajarilgan ishlarim tarixi (Jami: {{ completed_histories|length }} ta)
+        </h3>
+        <a href="{% url 'worker_panel' %}" class="btn-wood-outline btn-sm">
+            <i class="bi bi-arrow-left"></i> Vazifalarga qaytish
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table-wood">
+            <thead>
+                <tr>
+                    <th>Buyurtma</th>
+                    <th>Bosqich</th>
+                    <th>Boshlangan vaqt</th>
+                    <th>Tugallangan vaqt</th>
+                    <th>Sarflangan vaqt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in completed_histories %}
+                <tr>
+                    <td>
+                        <a href="{% url 'order_detail' h.order.id %}" style="color: #38bdf8; font-weight: 700; text-decoration: none;">
+                            M-{{ h.order.order_number }}
+                        </a>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);">{{ h.order.client_name }}</div>
+                    </td>
+                    <td>
+                        <span class="badge-pill-blue" style="font-size: 0.72rem;">{{ h.stage.name }}</span>
+                    </td>
+                    <td style="font-family: monospace; font-size: 0.8rem; color: var(--text-secondary);">
+                        {{ h.start_time|date:"d.m.Y H:i"|default:"—" }}
+                    </td>
+                    <td style="font-family: monospace; font-size: 0.8rem; color: #10b981;">
+                        {{ h.end_time|date:"d.m.Y H:i"|default:"—" }}
+                    </td>
+                    <td style="font-family: monospace; font-size: 0.8rem; color: #f59e0b;">
+                        {{ h.time_spent|default:"—" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5" style="color: var(--text-muted);">
+                        Hali tugallangan ishlar mavjud emas
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

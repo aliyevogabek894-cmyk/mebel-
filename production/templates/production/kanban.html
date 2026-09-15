@@ -1,0 +1,136 @@
+{% extends "production/base.html" %}
+{% block title %}Ish Jarayoni (Kanban) – Wood Timbero{% endblock %}
+{% block page_title %}Ish jarayoni (Kanban doskasi){% endblock %}
+
+{% block extra_css %}
+<style>
+    .kanban-board-scroll {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+    }
+    .kanban-board-col {
+        min-width: 260px;
+        max-width: 280px;
+        flex: 1;
+        flex-shrink: 0;
+    }
+    .kanban-col-head {
+        padding: 12px 16px;
+        border-radius: 12px 12px 0 0;
+        font-weight: 700;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .kanban-col-body {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        min-height: 480px;
+        padding: 10px;
+    }
+    .kanban-task-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        display: block;
+        text-decoration: none;
+        color: var(--text-main);
+        transition: all 0.2s ease;
+    }
+    .kanban-task-card:hover {
+        transform: translateY(-2px);
+        border-color: #38bdf8;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        color: #ffffff;
+    }
+    .kanban-card-code {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #38bdf8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="kanban-board-scroll">
+    {% for col in kanban_data %}
+    <div class="kanban-board-col">
+        <div class="kanban-col-head" style="
+            background: rgba(
+                {% if forloop.counter == 1 %}16,185,129
+                {% elif forloop.counter == 2 %}37,99,235
+                {% elif forloop.counter == 3 %}139,92,246
+                {% else %}6,182,212{% endif %}, 0.15);
+            border: 1px solid rgba(
+                {% if forloop.counter == 1 %}16,185,129
+                {% elif forloop.counter == 2 %}37,99,235
+                {% elif forloop.counter == 3 %}139,92,246
+                {% else %}6,182,212{% endif %}, 0.35);
+            color: {% if forloop.counter == 1 %}#10b981{% elif forloop.counter == 2 %}#3b82f6{% elif forloop.counter == 3 %}#a855f7{% else %}#06b6d4{% endif %};
+        ">
+            <span>{{ col.stage.name }}</span>
+            <span style="background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 12px; font-size: 0.72rem;">
+                {{ col.orders|length }}
+            </span>
+        </div>
+        <div class="kanban-col-body">
+            {% for order in col.orders %}
+            <a href="{% url 'order_detail' order.id %}" class="kanban-task-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="kanban-card-code">M-{{ order.order_number }}</span>
+                    <span class="badge bg-secondary" style="font-size: 0.65rem;">{{ order.get_priority_display }}</span>
+                </div>
+                <div style="font-weight: 600; font-size: 0.85rem; color: #ffffff;">{{ order.client_name }}</div>
+                <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">{{ order.product_name|truncatechars:26 }}</div>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.72rem; color: var(--text-muted);">
+                    <span><i class="bi bi-calendar3 me-1"></i>{{ order.deadline|date:"d.m" }}</span>
+                    {% if order.current_worker %}
+                    <span style="color: #94a3b8;"><i class="bi bi-person me-1"></i>{{ order.current_worker }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="text-center py-5" style="color: var(--text-muted); font-size: 0.82rem;">
+                <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                Hozircha buyurtma yo'q
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Tayyor Column -->
+    <div class="kanban-board-col">
+        <div class="kanban-col-head" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); color: #10b981;">
+            <span><i class="bi bi-check-circle-fill me-1"></i> Tayyor</span>
+            <span style="background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 12px; font-size: 0.72rem;">
+                {{ completed_orders|length }}
+            </span>
+        </div>
+        <div class="kanban-col-body">
+            {% for order in completed_orders %}
+            <a href="{% url 'order_detail' order.id %}" class="kanban-task-card" style="border-left: 3px solid #10b981;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span style="color: #10b981; font-weight: 700;">M-{{ order.order_number }}</span>
+                    <span class="badge-pill-green" style="font-size: 0.65rem; padding: 2px 6px;">✓ Tayyor</span>
+                </div>
+                <div style="font-weight: 600; font-size: 0.85rem; color: #ffffff;">{{ order.client_name }}</div>
+                <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">{{ order.product_name|truncatechars:26 }}</div>
+            </a>
+            {% empty %}
+            <div class="text-center py-5" style="color: var(--text-muted); font-size: 0.82rem;">
+                <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                Bo'sh
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

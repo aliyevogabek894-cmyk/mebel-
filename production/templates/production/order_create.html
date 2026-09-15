@@ -1,0 +1,145 @@
+{% extends "production/base.html" %}
+{% block title %}Yangi Buyurtma – Wood Timbero{% endblock %}
+{% block page_title %}Yangi buyurtma yaratish{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-lg-9">
+    {% if error %}
+    <div class="alert alert-danger mb-3" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #f87171; border-radius: 10px;">
+        <i class="bi bi-exclamation-triangle me-2"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="wood-panel">
+        <div class="wood-panel-header">
+            <h3 class="wood-panel-title">
+                <i class="bi bi-file-earmark-plus text-primary"></i>
+                Buyurtma ma'lumotlari
+            </h3>
+            <a href="{% url 'orders_list' %}" class="btn-wood-outline btn-sm">
+                <i class="bi bi-arrow-left"></i> Orqaga
+            </a>
+        </div>
+        <div style="padding: 24px;">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <!-- Asosiy ma'lumotlar -->
+                    <div class="col-12">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">
+                            📋 Asosiy ma'lumotlar
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Buyurtma №</label>
+                        <input type="text" name="order_number" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="M-025" value="{{ form_data.order_number|default:'' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Ustuvorlik</label>
+                        <select name="priority" class="form-select" style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;">
+                            <option value="NORMAL" {% if form_data.priority == "NORMAL" %}selected{% endif %}>🟢 Oddiy</option>
+                            <option value="MEDIUM" {% if form_data.priority == "MEDIUM" %}selected{% endif %}>🟡 O'rtacha</option>
+                            <option value="HIGH" {% if form_data.priority == "HIGH" %}selected{% endif %}>🔴 Yuqori</option>
+                            <option value="URGENT" {% if form_data.priority == "URGENT" %}selected{% endif %}>⚫ Shoshilinch</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Muddat</label>
+                        <input type="datetime-local" name="deadline" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            value="{{ form_data.deadline|default:'' }}" required>
+                    </div>
+
+                    <!-- Mijoz -->
+                    <div class="col-12 mt-4">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">
+                            👤 Mijoz ma'lumotlari
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Mijoz F.I.Sh.</label>
+                        <input type="text" name="client_name" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="Masalan: Jamshid Aliyev" value="{{ form_data.client_name|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Telefon raqami</label>
+                        <input type="text" name="client_phone" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="+998 90 123-45-67" value="{{ form_data.client_phone|default:'' }}">
+                    </div>
+
+                    <!-- Mahsulot -->
+                    <div class="col-12 mt-4">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">
+                            🛋️ Mahsulot va Texnik parametrlar
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Mahsulot nomi</label>
+                        <input type="text" name="product_name" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="Oshxona garnituri / Shkaf / Stol" value="{{ form_data.product_name|default:'' }}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Mahsulot turi</label>
+                        <input type="text" name="product_type" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="Mebel ishlab chiqarish" value="{{ form_data.product_type|default:'Mebel ishlab chiqarish' }}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Soni (ta)</label>
+                        <input type="number" name="quantity" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            value="{{ form_data.quantity|default:1 }}" min="1">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Material</label>
+                        <input type="text" name="material" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="LDSP 18 mm / MDF" value="{{ form_data.material|default:'LDSP 18 mm' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">O'lchamlari</label>
+                        <input type="text" name="dimensions" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="2800 × 600 mm" value="{{ form_data.dimensions|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Rangi</label>
+                        <input type="text" name="color" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="Oq mat / Yong'oq" value="{{ form_data.color|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Furnitura</label>
+                        <input type="text" name="hardware" class="form-control"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="Blum / GTV / Boyard" value="{{ form_data.hardware|default:'' }}">
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Qo'shimcha izoh</label>
+                        <textarea name="notes" class="form-control" rows="2"
+                            style="background:#090d16; border-color:var(--border-color); color:#fff; border-radius:8px;"
+                            placeholder="Eshiklar alohida, profil tutqich...">{{ form_data.notes|default:'' }}</textarea>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'orders_list' %}" class="btn-wood-outline">Bekor qilish</a>
+                        <button type="submit" class="btn-wood-success px-4">
+                            <i class="bi bi-check-lg"></i> Buyurtmani saqlash
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

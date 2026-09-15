@@ -1,0 +1,74 @@
+{% extends "production/base.html" %}
+{% block title %}Xodimlar – Wood Timbero{% endblock %}
+{% block page_title %}Xodimlar va stansiyalar ro'yxati{% endblock %}
+
+{% block content %}
+<div class="wood-panel">
+    <div class="wood-panel-header">
+        <h3 class="wood-panel-title">
+            <i class="bi bi-people-fill text-primary"></i>
+            Xodimlar tarkibi (Jami: {{ workers|length }} ta)
+        </h3>
+        <a href="/admin/production/employee/add/" class="btn-wood-success btn-sm" target="_blank">
+            <i class="bi bi-person-plus-fill"></i> Yangi xodim qo'shish
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table-wood">
+            <thead>
+                <tr>
+                    <th>F.I.Sh.</th>
+                    <th>Lavozim</th>
+                    <th>Biriktirilgan bosqich</th>
+                    <th>Telefon</th>
+                    <th>Holat</th>
+                    <th>Joriy vazifalar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for worker in workers %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #3b82f6, #06b6d4); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.8rem;">
+                                {{ worker.full_name|first|upper }}
+                            </div>
+                            <strong style="color: #ffffff;">{{ worker.full_name }}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary" style="font-size: 0.72rem;">{{ worker.get_role_display }}</span>
+                    </td>
+                    <td>
+                        {% if worker.stage %}
+                            <span class="badge-pill-blue" style="font-size: 0.72rem;">{{ worker.stage.name }}</span>
+                        {% else %}
+                            <span style="color: var(--text-muted);">—</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-family: monospace; color: var(--text-secondary);">
+                        {{ worker.phone }}
+                    </td>
+                    <td>
+                        {% if worker.is_active %}
+                            <span class="badge-pill-green" style="font-size: 0.72rem; padding: 3px 8px;">Faol</span>
+                        {% else %}
+                            <span class="badge bg-secondary" style="font-size: 0.72rem;">Nofaol</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span style="color: #38bdf8; font-weight: 600;">{{ worker.active_orders_count }}</span> ta buyurtma
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5" style="color: var(--text-muted);">
+                        Xodimlar topilmadi
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

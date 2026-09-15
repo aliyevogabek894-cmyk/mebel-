@@ -1,0 +1,332 @@
+{% extends "production/base.html" %}
+{% block title %}Tizim Arxitekturasi va Sxemasi – Wood Timbero{% endblock %}
+{% block page_title %}Tizim arxitekturasi va qurilmalar joylashuvi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .arch-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .arch-card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Architecture diagram nodes */
+    .arch-diagram-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        position: relative;
+    }
+    .arch-node {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        position: relative;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .arch-node:hover {
+        transform: translateY(-3px);
+        border-color: #38bdf8;
+    }
+    .arch-node-icon {
+        width: 52px; height: 52px;
+        border-radius: 12px;
+        margin: 0 auto 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+    }
+    .arch-node-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+    .arch-node-desc {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        line-height: 1.3;
+    }
+
+    /* Database tables list */
+    .db-badge-item {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .db-table-code {
+        font-family: monospace;
+        font-weight: 700;
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.1);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+    }
+
+    /* Advantages check list */
+    .advantage-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+    .advantage-check {
+        color: #10b981;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    /* Station photo/device layout cards */
+    .device-box {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        background: #090d16;
+    }
+    .device-box-header {
+        padding: 12px 16px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .device-box-body {
+        padding: 16px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+
+    <!-- 1-variant: Tizimning ichki tuzilishi (sxema) -->
+    <div class="arch-card">
+        <div class="arch-card-title">
+            <i class="bi bi-diagram-3-fill text-primary"></i>
+            1-variant — Tizimning ichki tuzilishi (sxema)
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.84rem; margin-bottom: 20px;">
+            LAN / Wi-Fi tarmog'i orqali barcha qurilmalar serverga to'g'ridan-to'g'ri ulangan holda ishlaydi.
+        </p>
+
+        <!-- Central Server Banner -->
+        <div class="text-center p-3 mb-4 rounded-3" style="background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(16,185,129,0.1)); border: 1px solid #2563eb;">
+            <div class="d-inline-flex align-items-center gap-3">
+                <i class="bi bi-hdd-network text-info fs-3"></i>
+                <div class="text-start">
+                    <div class="fw-bold text-white fs-6">Wood Timbero Asosiy Serveri & Ma'lumotlar Bazasi</div>
+                    <small class="text-muted">Lokal LAN / Wi-Fi tarmog'ida markaziy sinxronizatsiya</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="arch-diagram-grid">
+            <!-- Operator -->
+            <div class="arch-node">
+                <div class="arch-node-icon" style="background: rgba(37,99,235,0.15); color: #3b82f6;">
+                    <i class="bi bi-display"></i>
+                </div>
+                <div class="arch-node-title">Operator PC</div>
+                <div class="arch-node-desc">Windows 10/11<br>Buyurtma kiritish, nazorat, statistika</div>
+            </div>
+
+            <!-- Arrachi -->
+            <div class="arch-node">
+                <div class="arch-node-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">
+                    <i class="bi bi-scissors"></i>
+                </div>
+                <div class="arch-node-title">Arrachi (kesish)</div>
+                <div class="arch-node-desc">Kompyuter / Telefon<br>Buyurtmani bajarish va belgilash</div>
+            </div>
+
+            <!-- Kromkachi -->
+            <div class="arch-node">
+                <div class="arch-node-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">
+                    <i class="bi bi-phone"></i>
+                </div>
+                <div class="arch-node-title">Kromkachi</div>
+                <div class="arch-node-desc">Faqat mobil telefon<br>Kromka qilish va holatni belgilash</div>
+            </div>
+
+            <!-- Prisatka -->
+            <div class="arch-node">
+                <div class="arch-node-icon" style="background: rgba(139,92,246,0.15); color: #a855f7;">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div class="arch-node-title">Prisatka</div>
+                <div class="arch-node-desc">Kompyuter + Telefon<br>Teshiklarni burg'ulash va belgilash</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-variant: Ishlab chiqarishdagi qurilmalar joylashuvi -->
+    <div class="arch-card">
+        <div class="arch-card-title">
+            <i class="bi bi-layout-wtf text-success"></i>
+            2-variant — Ishlab chiqarishdagi qurilmalar joylashuvi
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="device-box">
+                    <div class="device-box-header" style="background: #2563eb;">
+                        <i class="bi bi-person-workspace"></i> Operator
+                    </div>
+                    <div class="device-box-body">
+                        <div>• Kompyuter</div>
+                        <div>• Windows 10/11</div>
+                        <div>• Boshqaruv, kuzatuv, hisobotlar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="device-box">
+                    <div class="device-box-header" style="background: #10b981;">
+                        <i class="bi bi-scissors"></i> Arrachi
+                    </div>
+                    <div class="device-box-body">
+                        <div>• Kompyuter</div>
+                        <div>• Telefon</div>
+                        <div>• Buyurtma bajarish</div>
+                        <div>• Holatni belgilash</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="device-box">
+                    <div class="device-box-header" style="background: #f59e0b;">
+                        <i class="bi bi-phone"></i> Kromkachi
+                    </div>
+                    <div class="device-box-body">
+                        <div>• Faqat telefon</div>
+                        <div>• Buyurtma bajarish</div>
+                        <div>• Holatni belgilash</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="device-box">
+                    <div class="device-box-header" style="background: #8b5cf6;">
+                        <i class="bi bi-tools"></i> Prisatka
+                    </div>
+                    <div class="device-box-body">
+                        <div>• Kompyuter</div>
+                        <div>• Telefon</div>
+                        <div>• Teshiklarni burg'ulash</div>
+                        <div>• Holatni belgilash</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ma'lumotlar bazasi va Asosiy imkoniyatlar -->
+    <div class="row g-4">
+        <!-- Ma'lumotlar bazasi (asosiy jadvallar) -->
+        <div class="col-lg-6">
+            <div class="arch-card h-100">
+                <div class="arch-card-title">
+                    <i class="bi bi-database text-info"></i>
+                    Ma'lumotlar bazasi (asosiy jadvallar)
+                </div>
+
+                <div class="db-badge-item">
+                    <span class="db-table-code">users</span>
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">xodimlar, rollar, parollar</span>
+                </div>
+                <div class="db-badge-item">
+                    <span class="db-table-code">orders</span>
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">buyurtmalar, o'lchamlar, mijozlar</span>
+                </div>
+                <div class="db-badge-item">
+                    <span class="db-table-code">order_steps</span>
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">bosqichlar va holatlar</span>
+                </div>
+                <div class="db-badge-item">
+                    <span class="db-table-code">stations</span>
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">stansiyalar (kesish, kromka, prisatka)</span>
+                </div>
+                <div class="db-badge-item">
+                    <span class="db-table-code">order_history</span>
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">harakatlar va vaqtlar tarixi</span>
+                </div>
+                <div class="db-badge-item">
+                    <span class="db-table-code">materials</span>
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">materiallar, LDSP, furnituralar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tizimning asosiy afzalliklari -->
+        <div class="col-lg-6">
+            <div class="arch-card h-100">
+                <div class="arch-card-title">
+                    <i class="bi bi-award text-warning"></i>
+                    Tizimning asosiy afzalliklari
+                </div>
+
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Real vaqtda buyurtmalar holatini ko'rish</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Har bir ishchining vazifasi aniq va tushunarli</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Operator doim jarayon nazoratida</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Oddiy va qulay interfeys (kompyuter + telefon)</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Mustaqil LAN/Wi-Fi ishlash (tashqi internet shart emas)</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Bildirishnomalar (buyurtma tayyor / muammo)</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>Hisobotlar, o'rtacha vaqt va samaradorlik monitoringi</span>
+                </div>
+                <div class="advantage-item">
+                    <i class="bi bi-check-circle-fill advantage-check"></i>
+                    <span>GIBLAB va boshqa ERP tizimlari bilan integratsiya imkoniyati</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
