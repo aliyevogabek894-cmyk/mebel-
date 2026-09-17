@@ -272,28 +272,6 @@
             border-radius: 20px;
         }
         .topbar-clock i { color: #38bdf8; }
-
-        .btn-ai-voice {
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: #38bdf8;
-            border-radius: 20px;
-            padding: 5px 14px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-ai-voice:hover {
-            background: rgba(56, 189, 248, 0.25);
-            color: #ffffff;
-            border-color: #38bdf8;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-            transform: translateY(-1px);
-        }
         @keyframes pulseWave {
             0% { transform: scale(0.95); opacity: 0.8; }
             100% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 8px #38bdf8); }
@@ -790,10 +768,6 @@
                     <i class="bi bi-clock"></i>
                     <span id="clockDisplay">{{ current_time_str }}</span>
                 </div>
-                <button type="button" class="btn-ai-voice" onclick="playAIVoice(true)" title="Sun'iy intellekt salomlashishi">
-                    <i class="bi bi-volume-up-fill text-info"></i>
-                    <span>AI Ovoz</span>
-                </button>
                 <a href="{% url 'dashboard' %}" class="btn-wood-outline btn-sm" title="Yangilash">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
@@ -868,52 +842,45 @@
         });
     }
 
-    // AI Voice Greeting Function
-    let hasPlayedWelcome = false;
-
-    function playAIVoice(force = false) {
-        if (hasPlayedWelcome && !force) return;
+    // AI Voice Welcome (No buttons, strictly once per session/login)
+    function playAIVoice() {
+        if (sessionStorage.getItem("has_welcomed_once") === "true") return;
 
         const toast = document.getElementById("aiVoiceToast");
-        const playBtn = document.getElementById("aiToastPlayBtn");
         const waveIcon = document.getElementById("aiWaveIcon");
-
-        if (toast) {
-            toast.style.display = "flex";
-            toast.style.opacity = "1";
-        }
 
         const audioSrc = window.WOOD_TIMBERO_WELCOME_AUDIO || "{% static 'audio/welcome.mp3' %}";
         const audio = new Audio(audioSrc);
 
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                hasPlayedWelcome = true;
-                if (playBtn) playBtn.style.display = "none";
-                if (waveIcon) waveIcon.classList.add("pulse-wave");
-                setTimeout(() => {
-                    if (toast) {
+        const triggerSpeech = () => {
+            if (sessionStorage.getItem("has_welcomed_once") === "true") return;
+            sessionStorage.setItem("has_welcomed_once", "true");
+
+            audio.play().then(() => {
+                if (toast) {
+                    toast.style.display = "flex";
+                    toast.style.opacity = "1";
+                    if (waveIcon) waveIcon.classList.add("pulse-wave");
+                    setTimeout(() => {
                         toast.style.opacity = "0";
                         setTimeout(() => { toast.style.display = "none"; }, 500);
-                    }
-                }, 6500);
+                    }, 6500);
+                }
             }).catch(err => {
-                console.log("Autoplay waiting for user gesture:", err);
-                if (playBtn) playBtn.style.display = "inline-flex";
-
+                console.log("Autoplay waiting for first gesture:", err);
+                // Unlock on the very first interaction (click/touch/key) anywhere on page
                 const unlockOnGesture = () => {
                     audio.play().then(() => {
-                        hasPlayedWelcome = true;
-                        if (playBtn) playBtn.style.display = "none";
-                        if (waveIcon) waveIcon.classList.add("pulse-wave");
-                        setTimeout(() => {
-                            if (toast) {
+                        if (toast) {
+                            toast.style.display = "flex";
+                            toast.style.opacity = "1";
+                            if (waveIcon) waveIcon.classList.add("pulse-wave");
+                            setTimeout(() => {
                                 toast.style.opacity = "0";
                                 setTimeout(() => { toast.style.display = "none"; }, 500);
-                            }
-                        }, 5500);
-                    }).catch(e => console.log("Unlock play error:", e));
+                            }, 6500);
+                        }
+                    }).catch(e => console.log(e));
 
                     document.removeEventListener("click", unlockOnGesture);
                     document.removeEventListener("keydown", unlockOnGesture);
@@ -923,24 +890,19 @@
                 document.addEventListener("keydown", unlockOnGesture, { once: true });
                 document.addEventListener("touchstart", unlockOnGesture, { once: true });
             });
-        }
+        };
+
+        triggerSpeech();
     }
 
-    // Auto-play on login OR on first session visit
+    // Run automatically when site is opened
     document.addEventListener("DOMContentLoaded", function() {
-        const justLogged = sessionStorage.getItem("just_logged_in") === "true";
-        const welcomed = sessionStorage.getItem("welcomed_this_session") === "true";
-        
-        if (justLogged || !welcomed) {
-            sessionStorage.removeItem("just_logged_in");
-            sessionStorage.setItem("welcomed_this_session", "true");
-            setTimeout(() => playAIVoice(false), 400);
-        }
+        setTimeout(playAIVoice, 500);
     });
 </script>
 
-<!-- AI Voice Welcome Toast Notification -->
-<div id="aiVoiceToast" style="position: fixed; bottom: 28px; right: 28px; z-index: 99999; background: #0d1527; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 14px 18px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.25); display: none; align-items: center; gap: 14px; color: #fff; max-width: 440px; transition: opacity 0.5s ease; backdrop-filter: blur(12px);">
+<!-- AI Voice Notification (Banner only, no buttons) -->
+<div id="aiVoiceToast" style="position: fixed; bottom: 28px; right: 28px; z-index: 99999; background: #0d1527; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 14px 20px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.25); display: none; align-items: center; gap: 14px; color: #fff; max-width: 440px; transition: opacity 0.5s ease; backdrop-filter: blur(12px);">
     <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.45); color: #ffffff;">
         <i class="bi bi-soundwave" id="aiWaveIcon"></i>
     </div>
@@ -949,10 +911,7 @@
             <span>Sun'iy Intellekt</span>
             <span style="display:inline-block; width:6px; height:6px; background:#10b981; border-radius:50%;"></span>
         </div>
-        <div style="font-size: 0.86rem; font-weight: 600; color: #f1f5f9; margin-top: 2px;">Assalomu alaykum! Wood Timbero tizimiga xush kelibsiz!</div>
-        <button id="aiToastPlayBtn" type="button" onclick="playAIVoice(true)" style="display: none; margin-top: 8px; background: linear-gradient(135deg, #0284c7, #2563eb); border: none; color: #fff; padding: 4px 12px; border-radius: 14px; font-size: 0.75rem; font-weight: 700; cursor: pointer; box-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);">
-            <i class="bi bi-play-fill me-1"></i> Ovozni tinglash
-        </button>
+        <div style="font-size: 0.86rem; font-weight: 600; color: #f1f5f9; margin-top: 3px; line-height: 1.35;">Assalomu alaykum! Wood Timbero tizimiga xush kelibsiz! Bu sun'iy intellekt bilan ishlaydigan veb sayt.</div>
     </div>
     <button type="button" onclick="document.getElementById('aiVoiceToast').style.display='none'" style="background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;">
         <i class="bi bi-x-lg"></i>
