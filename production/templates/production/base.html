@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Wood Timbero – Mebel Ishlab Chiqarish Boshqaruvi{% endblock %}</title>
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
-    <link rel="alternate icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicon-192x192.png' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
     <meta name="theme-color" content="#090d16">
     <!-- Google Fonts -->
@@ -182,13 +182,20 @@
             margin-bottom: 12px;
         }
         .user-avatar-circle {
-            width: 34px; height: 34px;
-            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            width: 38px; height: 38px;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.85rem; font-weight: 700; color: #fff;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+        .user-avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
         .user-meta-name {
             font-size: 0.82rem;
@@ -651,7 +658,7 @@
     <aside class="wood-sidebar" id="appSidebar">
         <a href="{% url 'dashboard' %}" class="brand-header">
             <div class="brand-logo-icon">
-                <img src="{% static 'img/logo.svg' %}" alt="Wood Timbero Logo">
+                <img src="{% static 'img/logo.png' %}" alt="Wood Timbero Logo">
             </div>
             <div class="brand-titles">
                 <div class="brand-name">Wood Timbero</div>
@@ -715,7 +722,7 @@
         <div class="sidebar-user-bottom">
             <div class="user-profile-widget">
                 <div class="user-avatar-circle">
-                    {{ user.username|first|upper }}
+                    <img src="{% static 'img/avatar.png' %}" alt="{{ user.username }}">
                 </div>
                 <div style="flex:1; overflow:hidden;">
                     <div class="user-meta-name">{{ employee.full_name|default:user.username }}</div>
@@ -745,6 +752,10 @@
             </div>
 
             <div class="topbar-right">
+                <div class="d-none d-md-flex align-items-center gap-2 px-2 py-1" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 20px;">
+                    <img src="{% static 'img/avatar.png' %}" alt="Avatar" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1.5px solid #38bdf8;">
+                    <span style="font-size: 0.78rem; font-weight: 600; color: #f1f5f9; padding-right: 4px;">{{ employee.full_name|default:user.username }}</span>
+                </div>
                 <div class="topbar-clock" id="liveClock">
                     <i class="bi bi-clock"></i>
                     <span id="clockDisplay">{{ current_time_str }}</span>
