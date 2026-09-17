@@ -38,3 +38,4 @@ curl_out.txt
 check_out.txt
 test_write.txt
 *.sqlite3
+staticfiles/

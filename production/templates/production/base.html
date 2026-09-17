@@ -1,9 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Wood Timbero – Mebel Ishlab Chiqarish Boshqaruvi{% endblock %}</title>
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+    <link rel="alternate icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+    <meta name="theme-color" content="#090d16">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,13 +79,23 @@
             text-decoration: none;
         }
         .brand-logo-icon {
-            width: 38px; height: 38px;
-            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
-            border-radius: 10px;
+            width: 44px; height: 44px;
+            border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.25rem; color: #fff; font-weight: 800;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
             flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.28);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .brand-header:hover .brand-logo-icon {
+            transform: scale(1.06);
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.4);
+        }
+        .brand-logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
         .brand-titles {
             line-height: 1.2;
@@ -634,7 +651,7 @@
     <aside class="wood-sidebar" id="appSidebar">
         <a href="{% url 'dashboard' %}" class="brand-header">
             <div class="brand-logo-icon">
-                <i class="bi bi-boxes"></i>
+                <img src="{% static 'img/logo.svg' %}" alt="Wood Timbero Logo">
             </div>
             <div class="brand-titles">
                 <div class="brand-name">Wood Timbero</div>
