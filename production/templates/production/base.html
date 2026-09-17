@@ -760,6 +760,9 @@
                     <i class="bi bi-clock"></i>
                     <span id="clockDisplay">{{ current_time_str }}</span>
                 </div>
+                <button type="button" class="btn-wood-outline btn-sm" onclick="playAIVoice()" title="AI Ovozli Salomlashish">
+                    <i class="bi bi-volume-up"></i>
+                </button>
                 <a href="{% url 'dashboard' %}" class="btn-wood-outline btn-sm" title="Yangilash">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
@@ -833,7 +836,51 @@
             sidebar.classList.toggle('open');
         });
     }
+
+    // AI Voice Greeting Function
+    function playAIVoice() {
+        const toast = document.getElementById("aiVoiceToast");
+        if (toast) {
+            toast.style.display = "flex";
+            toast.style.opacity = "1";
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => { toast.style.display = "none"; }, 500);
+            }, 6000);
+        }
+        const audio = new Audio("{% static 'audio/welcome.mp3' %}");
+        audio.play().catch(err => {
+            console.log("Audio play error:", err);
+        });
+    }
+
+    // Auto-play on login
+    document.addEventListener("DOMContentLoaded", function() {
+        if (sessionStorage.getItem("just_logged_in") === "true") {
+            sessionStorage.removeItem("just_logged_in");
+            // Delay slightly for smooth page render
+            setTimeout(playAIVoice, 600);
+        }
+    });
 </script>
+
+<!-- AI Voice Welcome Toast Notification -->
+<div id="aiVoiceToast" style="position: fixed; bottom: 28px; right: 28px; z-index: 99999; background: #0d1527; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 14px 18px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.25); display: none; align-items: center; gap: 14px; color: #fff; max-width: 420px; transition: opacity 0.5s ease; backdrop-filter: blur(12px);">
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.45); color: #ffffff;">
+        <i class="bi bi-soundwave"></i>
+    </div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 0.72rem; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 6px;">
+            <span>Sun'iy Intellekt</span>
+            <span style="display:inline-block; width:6px; height:6px; background:#10b981; border-radius:50%;"></span>
+        </div>
+        <div style="font-size: 0.86rem; font-weight: 600; color: #f1f5f9; margin-top: 2px;">Assalomu alaykum! Wood Timbero tizimiga xush kelibsiz!</div>
+    </div>
+    <button type="button" onclick="document.getElementById('aiVoiceToast').style.display='none'" style="background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;">
+        <i class="bi bi-x-lg"></i>
+    </button>
+</div>
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>
